@@ -173,7 +173,7 @@ function apply_execution_plan(desync, instance)
 	desync.func_n = instance.func_n
 	desync.func_instance = instance.func_instance
 	desync.arg = deepcopy(instance.arg)
-	apply_arg_prefix(desync)
+	-- no apply_arg_prefix here because it may refer non-existing blobs
 end
 -- produce resulting verdict from 2 verdicts
 function verdict_aggregate(v1, v2)
@@ -200,6 +200,8 @@ function plan_instance_execute_preapplied(desync, verdict, instance)
 	elseif not pos_check_range(desync, instance.range) then
 		DLOG("plan_instance_execute: not calling '"..desync.func_instance.."' because pos "..pos_str(desync,instance.range.from).." "..pos_str(desync,instance.range.to).." is out of range '"..pos_range_str(instance.range).."'")
 	else
+		-- condition is satisfied. here blobs must be referenced
+		apply_arg_prefix(desync)
 		DLOG("plan_instance_execute: calling '"..desync.func_instance.."'")
 		verdict = verdict_aggregate(verdict,_G[instance.func](nil, desync))
 	end

@@ -3709,7 +3709,7 @@ function cutoff_shim_check(desync)
 function apply_arg_prefix(desync)
 ```
 
-Выполняет подстановку значений аргументов из desync.arg, начинающихся с `%` и `#`.
+Выполняет подстановку значений аргументов из desync.arg, начинающихся с `%` и `#`, `\`.
 
 ### apply_execution_plan
 
@@ -3719,6 +3719,7 @@ function apply_execution_plan(desync, instance)
 
 Копирует в desync идентификацию инстанса и его аргументы из элемента [execution plan](#execution_plan) `instance`,
 тем самым воссоздает состояние desync, как если бы `instance` был вызван напрямую C кодом.
+За одним исключением : apply_arg_prefix не применяется, поскольку может содержать несуществующие блоб, существование которого зависит от условного выполнения предыдущих истансов.
 [execution plan](#execution_plan) выдается C функцией `execution_plan()` как массив, элементами которого являются `instance`.
 
 ### verdict_aggregate
@@ -3737,6 +3738,7 @@ function plan_instance_execute_preapplied(desync, verdict, instance)
 ```
 
 Выполняет элемент [execution plan](#execution_plan) `instance` с учетом [instance cutoff](#instance_cutoff) и стандартных фильтров [payload](#внутрипрофильные-фильтры) и [range](#внутрипрофильные-фильтры).
+При совпадении условий непосредственно перед вызовом выполняет apply_arg_prefix.
 Возвращает агрегацию verdict и вердикта `instance`.
 
 Вариант "preapplied" не выполняет apply_execution_plan, позволяя это сделат вызывающему коду.
@@ -4658,6 +4660,7 @@ function cond_lua(desync)
 ```
 
 Выполняет Lua код из аргумента "cond_code". Код возвращает значение условия через return. Возможна прямая адресация таблицы desync.
+desync.arg передаются с НЕ разименованными `%`, `#`, `\`, поскольку разименование может ссылаться на блобы, создаваемые предыдущими условно вызываемыми инстансами.
 
 # Вспомогательные программы
 

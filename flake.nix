@@ -55,6 +55,7 @@
               pkgs.libnetfilter_queue
               pkgs.libnfnetlink
               pkgs.libmnl
+              pkgs.libcap
               pkgs.luajit
             ];
 
